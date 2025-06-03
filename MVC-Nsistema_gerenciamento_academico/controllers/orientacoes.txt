@@ -1,0 +1,12 @@
+Em matricula: com a url certa: 
+
+php_if/MVC-Nsistema_gerenciamento_academico/index.php?controller=disciplina&action=list
+
+eh possivel listar corretamente. as demais funçoes do CRUD nao!
+
+
+-> Turma: ok
+
+* falta o roteamento: precisa colocar url a mao!
+-> Professor: Consigo inserir, listar, apagar, mas não atualizar!
+-> Aluno: inserir, listar, apagar, mas não atualizar!

@@ -28,7 +28,7 @@
                 <td>
                     <a href="index.php?controller=turma&action=showEditForm&id=<?= $turma['id_turma'] ?>">Editar</a>
                     
-                    <a href="index.php?controller=turma&action=deleteTurma&id=<?= $turma['id_turma'] ?>" onclick="return confirm('Tem certeza ? id = ' + '<?= $turma['id_turma'] ?>');">Excluir</a>
+                    <a href="index.php?controller=turma&action=delete&id=<?= $turma['id_turma'] ?>" onclick="return confirm('Tem certeza ? id = ' + '<?= $turma['id_turma'] ?>');">Excluir</a>
                 </td>
             </tr>
         <?php endforeach; ?>

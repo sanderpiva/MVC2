@@ -120,4 +120,71 @@ class Auth_model {
 
         return $errors;
     }
+
+    public function validateAlunoData($data) {
+        $errors = "";
+
+        // Verificação de campos obrigatórios
+        if (empty($data["matricula"]) || empty($data["nomeAluno"]) ||
+            empty($data["emailAluno"]) || empty($data["enderecoAluno"]) ||
+            empty($data["telefoneAluno"])) {
+            $errors .= "Todos os campos devem ser preenchidos.<br>";
+        }
+
+        // Validações individuais (como no seu script valida-inserir-aluno.php)
+        if (strlen($data["matricula"]) < 3 || strlen($data["matricula"]) > 20) {
+            $errors .= "Erro: campo 'Matricula do Aluno' deve ter entre 3 e 20 caracteres.<br>";
+        }
+        if (strlen($data["nomeAluno"]) < 10 || strlen($data["nomeAluno"]) > 30) {
+            $errors .= "Erro: campo 'Nome do Aluno' deve ter entre 10 e 30 caracteres.<br>";
+        }
+        if (!filter_var($data["emailAluno"], FILTER_VALIDATE_EMAIL)) {
+            $errors .= "Erro: campo 'E-mail' inválido.<br>";
+        }
+        if (strlen($data["enderecoAluno"]) < 5 || strlen($data["enderecoAluno"]) > 100) {
+            $errors .= "Erro: campo 'Endereço' deve ter entre 5 e 100 caracteres.<br>";
+        }
+        if (strlen($data["telefoneAluno"]) < 10 || strlen($data["telefoneAluno"]) > 25) {
+            $errors .= "Erro: campo 'Telefone' deve ter entre 10 e 25 caracteres.<br>";
+        }
+
+        return $errors;
+    }
+
+    public function registerAluno($data) {
+        //var_dump($data);
+        //die(); // só
+        $matricula = $data['matricula'] ?? '';
+        $nome = $data['nomeAluno'] ?? '';
+        $cpf = $data['cpf'] ?? '';
+        $email = $data['emailAluno'] ?? '';
+        $data_nascimento = $data['data_nascimento'] ?? '';
+        $endereco = $data['enderecoAluno'] ?? '';
+        $cidade = $data['cidadeAluno'] ?? '';
+        $telefone = $data['telefoneAluno'] ?? '';
+        $id_turma = $data['id_turma'] ?? '';
+        $senha = $data['senha'] ?? '';
+        $hashSenha = password_hash($senha, PASSWORD_DEFAULT);
+
+        try {
+            $sql = "INSERT INTO aluno (matricula, nome, cpf, email, data_nascimento, endereco, cidade, telefone, Turma_id_turma, senha) VALUES (:matricula, :nome, :cpf, :email, :data_nascimento, :endereco, :cidade, :telefone, :id_turma, :senha)";
+            $stmt = $this->pdo->prepare($sql); // Usando $this->pdo para a conexão
+            return $stmt->execute([
+                ':matricula' => $matricula,
+                ':nome' => $nome,
+                ':cpf' => $cpf,
+                ':email' => $email,
+                ':data_nascimento' => $data_nascimento,
+                ':endereco' => $endereco,
+                ':cidade' => $cidade,
+                ':telefone' => $telefone,
+                ':id_turma' => $id_turma,
+                ':senha' => $hashSenha
+            ]);
+        } catch (PDOException $e) {
+            // Registra o erro em vez de exibi-lo diretamente
+            error_log("Erro ao cadastrar aluno: " . $e->getMessage());
+            return false; // Retorna false em caso de erro
+        }
+    }
 }

@@ -1,31 +1,3 @@
-<?php
-//require_once __DIR__ . '/../../models/conexao.php';
-require_once "config/conexao.php";
-
-$isUpdating = false;
-$professorData = [];
-$errors = "";
-
-// Verifica se é edição
-if (isset($_GET['id_professor']) && !empty($_GET['id_professor'])) {
-    $isUpdating = true;
-    $idProfessorToUpdate = filter_input(INPUT_GET, 'id_professor', FILTER_SANITIZE_NUMBER_INT);
-
-    if ($idProfessorToUpdate === false || $idProfessorToUpdate === null) {
-        $errors = "<p style='color:red;'>ID de professor inválido.</p>";
-    } else {
-        $stmt = $conexao->prepare("SELECT registroProfessor, nome, email, endereco, telefone FROM professor WHERE id_professor = :id");
-        $stmt->execute([':id' => $idProfessorToUpdate]);
-        $professorData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$professorData) {
-            $errors = "<p style='color:red;'>Professor com ID $idProfessorToUpdate não encontrado.</p>";
-            $isUpdating = false;
-        }
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -36,7 +8,7 @@ if (isset($_GET['id_professor']) && !empty($_GET['id_professor'])) {
 <body class="servicos_forms">
 
     <div class="form_container">
-        <form class="form" action="<?php echo $isUpdating ? '../../controllers/professor/atualizar.php' : '../../controllers/professor/cadastrar.php'; ?>" method="POST">
+        <form class="form" action="index.php?controller=auth&action=registerProfessor" method="POST">
             <h2><?php echo $isUpdating ? 'Atualizar Professor' : 'Cadastro Professor'; ?></h2>
             <hr>
 

@@ -62,12 +62,38 @@ class Turma_controller {
         }
     }
 
+    public function update($id) {
+        if (isset($id)) {
+            $turma = $this->turmaModel->getTurmaById($id);
+            if ($turma) {
+                include __DIR__ . '/../views/turma/Create_edit.php';
+            } else {
+                displayErrorPage("Turma não encontrada para edição.", 'index.php?controller=turma&action=list');
+            }
+        } else {
+            displayErrorPage("ID da turma não especificado para edição.", 'index.php?controller=turma&action=list');
+        }
+    }
+
+    public function create($id) {
+        if (isset($id)) {
+            $turma = $this->turmaModel->getTurmaById($id);
+            if ($turma) {
+                include __DIR__ . '/../views/turma/Create_edit.php';
+            } else {
+                displayErrorPage("Turma não encontrada para edição.", 'index.php?controller=turma&action=list');
+            }
+        } else {
+            displayErrorPage("ID da turma não especificado para edição.", 'index.php?controller=turma&action=list');
+        }
+    }
+
     /**
      * Exclui uma turma.
      * Corresponde à ação 'delete' (GET).
-     * @param int $id ID da turma a ser excluída.
+     * @param int $id ID da turma a ser excluída.deleteTurma
      */
-    public function deleteTurma($id) {
+    public function delete($id) {
         if (isset($id)) {
             $this->turmaModel->deleteTurma($id);
             redirect('index.php?controller=turma&action=list');
