@@ -42,7 +42,7 @@ $isUpdating = isset($disciplinaData['id_disciplina']) && !empty($disciplinaData[
             <hr>
 
             <label for="professor">Professor:</label>
-            <input type="text" name="professor" id="professor" placeholder="Digite o professor" value="<?= htmlspecialchars($disciplinaData['professor_digitado'] ?? '') ?>" required>
+            <input type="text" name="professor" id="professor" placeholder="Digite o professor" value="<?= htmlspecialchars($disciplinaData['professor'] ?? '') ?>" required>
             <hr>
 
             <label for="descricaoDisciplina">Descrição da disciplina:</label>

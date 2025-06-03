@@ -10,3 +10,10 @@ eh possivel listar corretamente. as demais funçoes do CRUD nao!
 * falta o roteamento: precisa colocar url a mao!
 -> Professor: Consigo inserir, listar, apagar, mas não atualizar!
 -> Aluno: inserir, listar, apagar, mas não atualizar!
+
+//total: 9
+
+insere: aluno, professor, disciplina, turma
+lista: turma,disciplina, matricula, aluno, professor, prova
+update: turma, disciplina
+delete: turma, aluno, professor

@@ -63,8 +63,8 @@ class DisciplinaModel {
             ':professor' => $data['professor'],
             ':descricaoDisciplina' => $data['descricaoDisciplina'],
             ':semestre_periodo' => $data['semestre_periodo'],
-            ':id_professor' => $data['id_professor'],
-            ':id_turma' => $data['id_turma']
+            ':id_professor' => $data['Professor_id_professor'],
+            ':id_turma' => $data['Turma_id_turma']
         ]);
     }
 

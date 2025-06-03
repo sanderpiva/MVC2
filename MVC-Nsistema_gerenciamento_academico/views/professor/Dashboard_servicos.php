@@ -14,12 +14,12 @@
                 <h2>CADASTROS</h2>
                 <div class="button-grid">
                     <button onclick="window.location.href='index.php?controller=turma&action=showCreateForm'">Cadastrar Turma</button>
-                    <button onclick="window.location.href='/disciplina?action=create'">Cadastrar Disciplina</button>
-                    <button onclick="window.location.href='/matricula?action=create'">Cadastrar Matricula</button>
-                    <button onclick="window.location.href='/conteudo?action=create'">Cadastrar Conteudo</button>
-                    <button onclick="window.location.href='/prova?action=create'">Cadastrar Prova</button>
-                    <button onclick="window.location.href='/questoes-prova?action=create'">Cadastrar Questoes de prova</button>
-                    <button onclick="window.location.href='/respostas?action=create'">Cadastrar Respostas</button>
+                    <button onclick="window.location.href='index.php?controller=disciplina&action=showCreateForm'">Cadastrar Disciplina</button>
+                    <button onclick="window.location.href='index.php?controller=matricula&action=showCreateForm'">Cadastrar Matricula</button>
+                    <button onclick="window.location.href='index.php?controller=conteudo&action=showCreateForm'">Cadastrar Conteudo</button>
+                    <button onclick="window.location.href='index.php?controller=prova&action=showCreateForm'">Cadastrar Prova</button>
+                    <button onclick="window.location.href='index.php?controller=questoes&action=showCreateForm'">Cadastrar Questoes de prova</button>
+                    <button onclick="window.location.href='index.php?controller=respostas&action=showCreateForm'">Cadastrar Respostas</button>
                 </div>
             </section>
 
@@ -27,14 +27,14 @@
                 <h2>CONSULTAS</h2>
                 <div class="button-grid">
                     <button onclick="window.location.href='index.php?controller=turma&action=list'">Consultar Turma</button>
-                    <button onclick="window.location.href='/disciplina?action=list'">Consultar Disciplina</button>
-                    <button onclick="window.location.href='/matricula?action=list'">Consultar Matricula</button>
-                    <button onclick="window.location.href='/conteudo?action=list'">Consultar Conteudo</button>
-                    <button onclick="window.location.href='/prova?action=list'">Consultar Prova</button>
-                    <button onclick="window.location.href='/questoes-prova?action=list'">Consultar Questoes de prova</button>
-                    <button onclick="window.location.href='/respostas?action=list'">Consultar Respostas</button>
-                    <button onclick="window.location.href='/aluno?action=list'">Consultar Aluno</button>
-                    <button onclick="window.location.href='/professor?action=list'">Consultar Professor</button>
+                    <button onclick="window.location.href='index.php?controller=disciplina&action=list'">Consultar Disciplina</button>
+                    <button onclick="window.location.href='index.php?controller=matricula&action=list'">Consultar Matricula</button>
+                    <button onclick="window.location.href='index.php?controller=conteudo&action=list'">Consultar Conteudo</button>
+                    <button onclick="window.location.href='index.php?controller=prova&action=list'">Consultar Prova</button>
+                    <button onclick="window.location.href='index.php?controller=questoes&action=list'">Consultar Questoes de prova</button>
+                    <button onclick="window.location.href='index.php?controller=respostas&action=list'">Consultar Respostas</button>
+                    <button onclick="window.location.href='index.php?controller=aluno&action=list'">Consultar Aluno</button>
+                    <button onclick="window.location.href='index.php?controller=professor&action=list'">Consultar Professor</button>
                 </div>
             </section>
         </div>

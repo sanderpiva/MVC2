@@ -56,6 +56,20 @@ class Disciplina_controller {
         include __DIR__ . '/../views/disciplina/Create_edit.php';
     }
 
+
+    public function create($id) {
+        if (isset($id)) {
+            $turma = $this->disciplinaModel->getDisciplinaById($id);
+            if ($turma) {
+                include __DIR__ . '/../views/disciplina/Create_edit.php';
+            } else {
+                displayErrorPage("Disciplina não encontrada para edição.", 'index.php?controller=disciplina&action=list');
+            }
+        } else {
+            displayErrorPage("ID da disciplina não especificado para edição.", 'index.php?controller=disciplina&action=list');
+        }
+    }
+
     public function handleCreatePost($postData) {
         $errors = $this->validateDisciplinaData($postData);
 
@@ -72,6 +86,19 @@ class Disciplina_controller {
             redirect('index.php?controller=disciplina&action=list&message=' . urlencode("Disciplina cadastrada com sucesso!"));
         } else {
             displayErrorPage("Erro ao cadastrar disciplina.", 'index.php?controller=disciplina&action=showCreateForm');
+        }
+    }
+
+    public function update($id) {
+        if (isset($id)) {
+            $turma = $this->disciplinaModel->getDisciplinaById($id);
+            if ($turma) {
+                include __DIR__ . '/../views/disciplina/Create_edit.php';
+            } else {
+                displayErrorPage("Disciplina não encontrada para edição.", 'index.php?controller=disciplina&action=list');
+            }
+        } else {
+            displayErrorPage("ID da disciplina não especificado para edição.", 'index.php?controller=disciplina&action=list');
         }
     }
 
