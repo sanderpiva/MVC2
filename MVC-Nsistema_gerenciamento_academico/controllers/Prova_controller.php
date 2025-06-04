@@ -5,22 +5,32 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
 require_once __DIR__ . '/../models/Prova_model.php';
+require_once __DIR__ . '/../models/Disciplina_model.php'; // Adicione esta linha
+require_once __DIR__ . '/../models/Professor_model.php';  
 
 class Prova_controller {
     private $provaModel;
-
+    private $disciplinaModel;
+    private $professorModel;
+    
     public function __construct($conexao) {
         $this->provaModel = new ProvaModel($conexao);
+        $this->disciplinaModel = new DisciplinaModel($conexao); // <-- Adicione esta linha
+        $this->professorModel = new ProfessorModel($conexao);   // <-- Adicione esta linha
     }
 
     public function list() {
+    
         $provas = $this->provaModel->getAllProvas();
         include __DIR__ . '/../views/prova/List.php';
     }
 
     public function showCreateForm() {
+    
         $provaData = null;
         $errors = [];
+        $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+        $professores = $this->professorModel->getAllProfessores();
         include __DIR__ . '/../views/prova/Create_edit.php';
     }
 
@@ -35,13 +45,17 @@ class Prova_controller {
             return;
         }
         $errors = [];
-        include __DIR__ . '/../views/prova/Create_edit.php';
+        $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+        $professores = $this->professorModel->getAllProfessores();
+        
     }
 
     public function handleCreatePost($postData) {
         $errors = $this->validateProvaData($postData);
         if (!empty($errors)) {
-            $provaData = $postData;
+             $provaData = $postData;
+            $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+            $professores = $this->professorModel->getAllProfessores();
             include __DIR__ . '/../views/prova/Create_edit.php';
             return;
         }
@@ -60,6 +74,8 @@ class Prova_controller {
         $errors = $this->validateProvaData($postData);
         if (!empty($errors)) {
             $provaData = $postData;
+            $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+            $professores = $this->professorModel->getAllProfessores();
             include __DIR__ . '/../views/prova/Create_edit.php';
             return;
         }
@@ -71,16 +87,23 @@ class Prova_controller {
     }
 
     public function delete($id) {
-        if (!$id) {
+        
+        if (!isset($id) || !is_numeric($id)) {
             displayErrorPage("ID da prova não especificado.", 'index.php?controller=prova&action=list');
             return;
         }
-        if ($this->provaModel->deleteProva($id)) {
+
+        try {
+            if ($this->provaModel->deleteProva($id)) {
             redirect('index.php?controller=prova&action=list&message=' . urlencode("Prova excluída com sucesso!"));
-        } else {
+            } else {
             displayErrorPage("Erro ao excluir prova.", 'index.php?controller=prova&action=list');
+            }
+        } catch (PDOException $e) {
+            displayErrorPage("Erro de banco de dados ao excluir questão: " . $e->getMessage(), 'index.php?controller=prova&action=list');
         }
     }
+
 
     private function validateProvaData($data) {
         $errors = [];

@@ -20,6 +20,7 @@ require_once __DIR__ . '/controllers/Professor_controller.php';
 require_once __DIR__ . '/controllers/Prova_controller.php';
 require_once __DIR__ . '/controllers/Questoes_controller.php';
 require_once __DIR__ . '/controllers/Respostas_controller.php';
+require_once __DIR__ . '/controllers/Conteudo_controller.php';
 
 /**
  * Redireciona o navegador para uma nova URL.

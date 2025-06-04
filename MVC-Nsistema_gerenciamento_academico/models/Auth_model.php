@@ -6,7 +6,7 @@
 //require_once __DIR__ . '/conexao.php';
 require_once "config/conexao.php";
 
-class Auth_model {
+class AuthModel {
     private $pdo;
 
     public function __construct() {

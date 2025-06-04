@@ -13,8 +13,8 @@ $error = isset($_GET['erros']) ? htmlspecialchars($_GET['erros']) : '';
     <title>Lista de Provas</title>
     <link rel="stylesheet" href="public/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+             integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+             crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="servicos_forms">
     <h2>Lista de Provas</h2>
@@ -31,13 +31,9 @@ $error = isset($_GET['erros']) ? htmlspecialchars($_GET['erros']) : '';
             <tr>
                 <th>Código de prova</th>
                 <th>Tipo</th>
-                <th>Disciplina</th>
-                <th>Conteúdo</th>
+                <th>Disciplina</th>        <th>Conteúdo</th>
                 <th>Data</th>
-                <th>Professor</th>
-                <th>Código da Disciplina</th>
-                <th>Registro do Professor</th>
-                <th>Ações</th>
+                <th>Professor</th>         <th>Código da Disciplina</th> <th>Registro do Professor</th> <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -50,12 +46,12 @@ $error = isset($_GET['erros']) ? htmlspecialchars($_GET['erros']) : '';
                     <tr>
                         <td><?= htmlspecialchars($prova['codigoProva']) ?></td>
                         <td><?= htmlspecialchars($prova['tipo_prova']) ?></td>
-                        <td><?= htmlspecialchars($prova['disciplina']) ?></td>
+                        <td><?= htmlspecialchars($prova['nome_disciplina'] ?? 'N/A') ?></td>
                         <td><?= htmlspecialchars($prova['conteudo']) ?></td>
                         <td><?= htmlspecialchars($prova['data_prova']) ?></td>
-                        <td><?= htmlspecialchars($prova['professor']) ?></td>
-                        <td><?= htmlspecialchars($prova['Disciplina_id_disciplina']) ?></td>
-                        <td><?= htmlspecialchars($prova['Disciplina_Professor_id_professor']) ?></td>
+                        <td><?= htmlspecialchars($prova['nome_professor'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($prova['codigo_disciplina'] ?? 'N/A') ?></td>
+                        <td><?= htmlspecialchars($prova['registro_professor'] ?? 'N/A') ?></td>
                         <td id='buttons-wrapper'>
                             <a href="index.php?controller=prova&action=showEditForm&id=<?= htmlspecialchars($prova['id_prova']) ?>">
                                 <i class='fa-solid fa-pen'></i> Atualizar

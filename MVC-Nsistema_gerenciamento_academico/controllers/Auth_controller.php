@@ -9,7 +9,7 @@ class Auth_controller {
     private $authModel;
 
     public function __construct() {
-        $this->authModel = new Auth_model();
+        $this->authModel = new AuthModel();
     }
 
     public function showLoginForm() {

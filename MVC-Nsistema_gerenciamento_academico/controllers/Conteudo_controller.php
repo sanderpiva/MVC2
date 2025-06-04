@@ -1,198 +1,223 @@
 <?php
+// app/Controllers/ConteudoController.php
 
-// Adjust path to conexao.php based on your new project root
-//require_once __DIR__ . '/../../config/conexao.php';
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 require_once __DIR__ . '/../models/Conteudo_model.php';
+require_once __DIR__ . '/../models/Disciplina_model.php';
 
-session_start();
-
-// Basic authentication check
-// Assuming your index.php or a central router handles initial login redirect
-// If not, keep a redirect here but consider a more global authentication middleware
-if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true || $_SESSION['tipo_usuario'] !== 'professor') {
-    // Redirect to the login page or a general access denied page
-    header("Location: /index.php"); // Adjust to your actual login page path
-    exit();
+if (!function_exists('displayErrorPage')) {
+    function displayErrorPage($message, $redirectUrl) {
+        echo "<h1>Erro: " . htmlspecialchars($message) . "</h1>";
+        echo "<p><a href='" . htmlspecialchars($redirectUrl) . "'>Voltar</a></p>";
+        exit;
+    }
+}
+if (!function_exists('redirect')) {
+    function redirect($url) {
+        header("Location: " . $url);
+        exit;
+    }
 }
 
-class Conteudo_Controller {
-    private $model;
-    private $conexao; // Keep connection to pass to model
+class Conteudo_controller {
+    private $conteudoModel;
+    private $disciplinaModel;
+    private $professorModel; 
 
-    public function __construct(PDO $conexao) {
-        $this->conexao = $conexao;
-        $this->model = new Conteudo_Model($conexao);
+    public function __construct($conexao) {
+        $this->conteudoModel = new ConteudoModel($conexao);
+        $this->disciplinaModel = new DisciplinaModel($conexao);
+        $this->professorModel = new ProfessorModel($conexao);
     }
 
-    // Handles displaying the form for creating or editing content
-    public function showForm($id_conteudo = null) {
-        $isUpdating = false;
-        $conteudoData = [];
+    /**
+     * Exibe a lista de todos os conteúdos.
+     */
+    public function list() {
+        $conteudos = $this->conteudoModel->getAllConteudos();
+        include __DIR__ . '/../views/conteudo/List.php';
+    }
+
+    /**
+     * Exibe o formulário de criação de conteúdo.
+     */
+    public function showCreateForm() {
+        $conteudoData = null; // Para formulário vazio
+        //$errors = [];
+        // Carrega disciplinas para o dropdown
+        //$disciplinas = $this->disciplinaModel->getAllDisciplinas();
+        // REMOVIDO: $professores = $this->professorModel->getAllProfessores();
+        //include __DIR__ . '/../views/conteudo/Create_edit.php';
+    
+        $disciplinas = $this->disciplinaModel->getAllDisciplinas(); // Precisará retornar Professor_id_professor
+        $professores = $this->professorModel->getAllProfessores();
+
+        $professorsLookup = []; // Constroi o lookup para a view
+        foreach ($professores as $professor) {
+            $professorsLookup[$professor['id_professor']] = $professor['nome'];
+        }
+
+        $conteudoData = null; // Garante que $conteudoData está vazio para não entrar no $isUpdating
         $errors = [];
-        $nomeDisciplinaAtual = '';
 
-        if ($id_conteudo) {
-            $conteudoData = $this->model->getConteudoById($id_conteudo);
-            if (!$conteudoData) {
-                $_SESSION['error'] = "Conteúdo com ID $id_conteudo não encontrado.";
-                header("Location: /conteudo?action=list"); // Redirect to list if not found
-                exit();
-            }
-            $isUpdating = true;
-            $nomeDisciplinaAtual = htmlspecialchars($conteudoData['nomeDisciplina']);
-        }
-
-        $disciplinas = $this->model->getAllDisciplinas();
-        $professores = $this->model->getAllProfessores();
-        $professorsLookup = [];
-        foreach ($professores as $professor) {
-            $professorsLookup[$professor['id_professor']] = $professor['nome'];
-        }
-
-        // Pass data to the view
-        require_once __DIR__ . '/../views/conteudo/Create_edit.php';
+        // Passa as variáveis para a view
+        include __DIR__ . '/../views/conteudo/Create_edit.php';
+    
     }
 
-    // Handles processing the form submission for creating or updating content
-    public function processForm() {
-        $data = $_POST;
-        $errors = $this->validate($data);
+    /**
+     * Exibe o formulário de edição de conteúdo.
+     * @param int $id ID do conteúdo a ser editado.
+     */
+    /*
+    public function showEditForm($id) {
+        if (!$id) {
+            displayErrorPage("ID do conteúdo não especificado.", 'index.php?controller=conteudo&action=list');
+            return;
+        }
+        $conteudoData = $this->conteudoModel->getConteudoById($id);
+        if (!$conteudoData) {
+            displayErrorPage("Conteúdo não encontrado.", 'index.php?controller=conteudo&action=list');
+            return;
+        }
+        $errors = [];
+        // Carrega disciplinas para o dropdown
+        $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+        // REMOVIDO: $professores = $this->professorModel->getAllProfessores();
+        include __DIR__ . '/../views/conteudo/Create_edit.php';
+    }*/
 
-        if (empty($errors)) {
-            if (isset($data['id_conteudo']) && !empty($data['id_conteudo'])) {
-                // Update operation
-                if ($this->model->updateConteudo($data)) {
-                    $_SESSION['message'] = "Conteúdo atualizado com sucesso!";
-                    header("Location: /conteudo?action=list");
-                    exit();
-                } else {
-                    $errors[] = "Erro ao atualizar conteúdo.";
-                }
-            } else {
-                // Create operation
-                if ($this->model->createConteudo($data)) {
-                    $_SESSION['message'] = "Conteúdo cadastrado com sucesso!";
-                    header("Location: /conteudo?action=list");
-                    exit();
-                } else {
-                    $errors[] = "Erro ao cadastrar conteúdo.";
-                }
-            }
+    public function showEditForm($id) {
+        if (!$id) {
+                displayErrorPage("ID do conteúdo não especificado.", 'index.php?controller=conteudo&action=list');
+                return;
         }
 
-        // If there are errors or the operation failed, reload the form with existing data and errors
-        $isUpdating = isset($data['id_conteudo']) && !empty($data['id_conteudo']);
-        $conteudoData = $data; // Repopulate form with submitted data
-        $disciplinas = $this->model->getAllDisciplinas();
-        $professores = $this->model->getAllProfessores();
+        $conteudoData = $this->conteudoModel->getConteudoById($id);
+        if (!$conteudoData) {
+            displayErrorPage("Conteúdo não encontrado.", 'index.php?controller=conteudo&action=list');
+            return;
+        }
+
+        $errors = []; // Mantenha como está
+
+        // Carrega disciplinas para o dropdown (isto você já tem)
+        $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+
+        // ADICIONE ESTAS DUAS LINHAS PARA BUSCAR PROFESSORES
+        $professores = $this->professorModel->getAllProfessores();
+
+        // ADICIONE ESTE BLOCO PARA CRIAR O LOOKUP DE PROFESSORES
         $professorsLookup = [];
         foreach ($professores as $professor) {
             $professorsLookup[$professor['id_professor']] = $professor['nome'];
         }
-        $nomeDisciplinaAtual = htmlspecialchars($conteudoData['nomeDisciplina'] ?? ''); // For update display
+
+        // ADICIONE ESTA LINHA PARA DEFINIR O NOME DA DISCIPLINA ATUAL
+        // Isso assume que seu ConteudoModel::getConteudoById() retorna 'nomeDisciplina'
+        $nomeDisciplinaAtual = $conteudoData['nomeDisciplina'] ?? 'Nome da Disciplina Desconhecido';
+
+        // Inclui a view (isto você já tem)
+            include __DIR__ . '/../views/conteudo/Create_edit.php';
         
-        require_once __DIR__ . '/../views/conteudo/Create_edit.php';
     }
 
-    // Handles listing all contents
-    public function listContents() {
-        $conteudos = $this->model->getAllConteudos();
-        require_once __DIR__ . '/../views/conteudo/List.php';
-    }
+    /**
+     * Lida com a requisição POST para criar um novo conteúdo.
+     */
+    public function handleCreatePost($postData) {
+        $errors = $this->validateConteudoData($postData);
+        if (!empty($errors)) {
+            $conteudoData = $postData; // Repopula o formulário
+            $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+            // REMOVIDO: $professores = $this->professorModel->getAllProfessores();
+            include __DIR__ . '/../views/conteudo/Create_edit.php';
+            return;
+        }
 
-    // Handles deleting a content
-    public function deleteContent($id_conteudo) {
-        if ($this->model->deleteConteudo($id_conteudo)) {
-            $_SESSION['message'] = "Conteúdo excluído com sucesso!";
+        if ($this->conteudoModel->createConteudo($postData)) {
+            redirect('index.php?controller=conteudo&action=list&message=' . urlencode("Conteúdo criado com sucesso!"));
         } else {
-            $_SESSION['error'] = "Erro ao excluir conteúdo.";
+            displayErrorPage("Erro ao criar conteúdo.", 'index.php?controller=conteudo&action=showCreateForm');
         }
-        header("Location: /conteudo?action=list");
-        exit();
     }
 
-    // Private method for validation
-    private function validate($data) {
-        $errors = [];
-
-        if (
-            empty($data["codigoConteudo"]) ||
-            empty($data["tituloConteudo"]) ||
-            empty($data["descricaoConteudo"]) ||
-            empty($data["data_postagem"]) ||
-            empty($data["professor"]) ||
-            empty($data["disciplina"]) ||
-            empty($data["tipo_conteudo"]) ||
-            empty($data["id_disciplina"])
-        ) {
-            $errors[] = "Todos os campos devem ser preenchidos.";
+    /**
+     * Lida com a requisição POST para atualizar um conteúdo existente.
+     */
+    public function handleUpdatePost($postData) {
+        if (empty($postData['id_conteudo'])) {
+            displayErrorPage("ID do conteúdo não fornecido.", 'index.php?controller=conteudo&action=list');
+            return;
+        }
+        $errors = $this->validateConteudoData($postData);
+        if (!empty($errors)) {
+            $conteudoData = $postData; // Repopula o formulário
+            $disciplinas = $this->disciplinaModel->getAllDisciplinas();
+            // REMOVIDO: $professores = $this->professorModel->getAllProfessores();
+            include __DIR__ . '/../views/conteudo/Create_edit.php';
+            return;
         }
 
-        if (strlen($data["codigoConteudo"]) < 5 || strlen($data["codigoConteudo"]) > 20) {
+        if ($this->conteudoModel->updateConteudo($postData)) {
+            redirect('index.php?controller=conteudo&action=list&message=' . urlencode("Conteúdo atualizado com sucesso!"));
+        } else {
+            displayErrorPage("Erro ao atualizar conteúdo.", 'index.php?controller=conteudo&action=showEditForm&id=' . $postData['id_conteudo']);
+        }
+    }
+
+    /**
+     * Lida com a requisição para deletar um conteúdo.
+     */
+    public function delete($id) {
+        if (!isset($id) || !is_numeric($id)) {
+            displayErrorPage("ID do conteúdo não especificado.", 'index.php?controller=conteudo&action=list');
+            return;
+        }
+
+        try {
+            if ($this->conteudoModel->deleteConteudo($id)) {
+                redirect('index.php?controller=conteudo&action=list&message=' . urlencode("Conteúdo excluído com sucesso!"));
+            } else {
+                displayErrorPage("Erro ao excluir conteúdo.", 'index.php?controller=conteudo&action=list');
+            }
+        } catch (PDOException $e) {
+            displayErrorPage("Erro de banco de dados ao excluir conteúdo: " . $e->getMessage(), 'index.php?controller=conteudo&action=list');
+        }
+    }
+
+    /**
+     * Valida os dados do formulário de conteúdo.
+     * @param array $data Dados do formulário.
+     * @return array Array de erros.
+     */
+    private function validateConteudoData($data) {
+        $errors = [];
+        if (empty($data['codigoConteudo']) || strlen($data['codigoConteudo']) < 5 || strlen($data['codigoConteudo']) > 20) {
             $errors[] = "Erro: campo 'Código do Conteúdo' deve ter entre 5 e 20 caracteres.";
         }
-
-        if (strlen($data["tituloConteudo"]) < 5 || strlen($data["tituloConteudo"]) > 40) {
+        if (empty($data['titulo']) || strlen($data['titulo']) < 5 || strlen($data['titulo']) > 40) {
             $errors[] = "Erro: campo 'Titulo de Conteúdo' deve ter entre 5 e 40 caracteres.";
         }
-
-        if (strlen($data["descricaoConteudo"]) < 30 || strlen($data["descricaoConteudo"]) > 300) {
+        if (empty($data['descricao']) || strlen($data['descricao']) < 30 || strlen($data['descricao']) > 300) {
             $errors[] = "Erro: campo 'Descrição do Conteúdo' deve ter entre 30 e 300 caracteres.";
         }
-
-        if (strlen($data["professor"]) < 5 || strlen($data["professor"]) > 20) {
-            $errors[] = "Erro: campo 'Professor' deve ter entre 5 e 20 caracteres.";
+        if (empty($data['data_postagem'])) {
+            $errors[] = "A data de postagem é obrigatória.";
         }
-
-        if (strlen($data["disciplina"]) < 5 || strlen($data["disciplina"]) > 20) {
-            $errors[] = "Erro: campo 'Disciplina' deve ter entre 5 e 20 caracteres.";
+        // Se a coluna 'professor' é um campo de texto livre na tabela 'conteudo', valide-a aqui.
+        // Caso contrário, remova esta validação.
+        if (empty($data['professor']) || strlen($data['professor']) < 5 || strlen($data['professor']) > 20) {
+             $errors[] = "Erro: campo 'Professor' deve ter entre 5 e 20 caracteres.";
         }
-
-        if (strlen($data["tipo_conteudo"]) < 5 || strlen($data["tipo_conteudo"]) > 20) {
+        if (empty($data['id_disciplina'])) { // Valida a FK da disciplina
+            $errors[] = "A disciplina é obrigatória.";
+        }
+        if (empty($data['tipo_conteudo']) || strlen($data['tipo_conteudo']) < 5 || strlen($data['tipo_conteudo']) > 20) {
             $errors[] = "Erro: campo 'Tipo de Conteúdo' deve ter entre 5 e 20 caracteres.";
         }
-
         return $errors;
     }
-}
-
-// --- Controller Instantiation and Routing ---
-// This part acts as a basic router for the Conteudo module.
-// In a full MVC framework, this would be handled by a more sophisticated central router.
-
-$controller = new Conteudo_Controller($conexao);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller->processForm();
-} elseif (isset($_GET['action'])) {
-    switch ($_GET['action']) {
-        case 'create':
-            $controller->showForm();
-            break;
-        case 'edit':
-            if (isset($_GET['id'])) {
-                $controller->showForm($_GET['id']);
-            } else {
-                $_SESSION['error'] = "ID do conteúdo não especificado para edição.";
-                header("Location: /conteudo?action=list");
-            }
-            break;
-        case 'delete':
-            if (isset($_GET['id'])) {
-                $controller->deleteContent($_GET['id']);
-            } else {
-                $_SESSION['error'] = "ID do conteúdo não especificado para exclusão.";
-                header("Location: /conteudo?action=list");
-            }
-            break;
-        case 'list':
-            $controller->listContents();
-            break;
-        default:
-            header("Location: /conteudo?action=list"); // Default to list if action is invalid
-            break;
-    }
-} else {
-    // If no action is specified, default to listing
-    header("Location: /conteudo?action=list");
 }

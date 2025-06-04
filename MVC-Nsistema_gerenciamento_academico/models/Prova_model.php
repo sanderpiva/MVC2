@@ -9,7 +9,22 @@ class ProvaModel {
     }
 
     public function getAllProvas() {
-        $stmt = $this->db->query("SELECT * FROM prova");
+        // --- INÍCIO DA ALTERAÇÃO ---
+        $stmt = $this->db->query("
+            SELECT
+                p.*,
+                d.nome AS nome_disciplina,          -- Adiciona o nome da disciplina
+                d.codigoDisciplina AS codigo_disciplina, -- Adiciona o código da disciplina
+                prof.nome AS nome_professor,        -- Adiciona o nome do professor
+                prof.registroProfessor AS registro_professor -- Adiciona o registro do professor
+            FROM
+                prova AS p
+            LEFT JOIN
+                disciplina AS d ON p.Disciplina_id_disciplina = d.id_disciplina
+            LEFT JOIN
+                professor AS prof ON p.Disciplina_Professor_id_professor = prof.id_professor
+        ");
+        // --- FIM DA ALTERAÇÃO ---
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

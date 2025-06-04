@@ -31,7 +31,6 @@
                 <th>Endereço</th>
                 <th>Cidade</th>
                 <th>Telefone</th>
-                <th>Turma</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -47,7 +46,6 @@
                         <td><?= htmlspecialchars($aluno['endereco']) ?></td>
                         <td><?= htmlspecialchars($aluno['cidade']) ?></td>
                         <td><?= htmlspecialchars($aluno['telefone']) ?></td>
-                        <td><?= htmlspecialchars($aluno['Turma_id_turma']) ?></td>
                         <td id='buttons-wrapper'>
                             <a href="index.php?controller=aluno&action=showEditForm&id=<?= htmlspecialchars($aluno['id_aluno']) ?>" class="button-link edit-button"><i class='fa-solid fa-pen'></i> Atualizar</a>
                             <a href="index.php?controller=aluno&action=delete&id=<?= htmlspecialchars($aluno['id_aluno']) ?>" class="button-link delete-button" onclick="return confirm('Tem certeza que deseja excluir o aluno <?= htmlspecialchars($aluno['nome']) ?> (Matrícula: <?= htmlspecialchars($aluno['matricula']) ?>)?');"><i class='fa-solid fa-trash'></i> Excluir</a>
